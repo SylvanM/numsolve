@@ -17,3 +17,36 @@ let eq = FirstOrderDE { 3 + $0 - $1 }
 ```
 
 Inside the closure is where you define `y'`. $0 represents `t`, and $1 represents `y`.
+
+Now we can create the actual solver object, provided we give it the initial condition for `y(0)`:
+
+```swift
+let solver = GeneralSolver(eq, y0: 1)
+```
+
+Now we're ready to start solving! We're going to do a simple Euler approximation:
+
+```swift
+let eq = FirstOrderDE { 3 + $0 - $1 }
+let solver = GeneralSolver(eq, y0: 1)
+
+solver.euler(n: 8, stepSize: 0.05) // prints the table with each n steps for the Euler numerical method.
+```
+
+Using other approximation methods is simple:
+
+```swift
+solver.backwardEuler(n: 8, stepSize: 0.05)
+solver.adamsMoulton(n: 40, stepSize: 0.05)
+```
+
+Here is a list of all available numerical methods:
+
+- Euler's Method
+- Backward Euler
+- Improved Euler
+- Runge Kutta (4th Order)
+- Adams Bashforth
+- Adams Moulton
+- Backward Differentiation
+- Predictor-Corrector
