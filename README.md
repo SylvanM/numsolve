@@ -6,7 +6,7 @@ Hello all!
 This is a tool for computing numerical methods for systems of differential first order differential equations, or second order equations. I originally made this to complete a 
 homework assignment, but I realized other people could benefit from this tool. It displays all the different "steps" in computing the numerical approximations in the form of a table.
 
-## How to use
+## How to use (quickstart)
 
 We'll be walking through the steps for approximating the first order linear differential equation: `y' = 3 + t - y`
 
