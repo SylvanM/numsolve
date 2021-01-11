@@ -53,11 +53,11 @@ class ImprovedEuler: NumericalMethod {
     }
     
     func showCacheTable() {
-        print("n   |t                 |y                 |y'                |f(tn+h, y+hy')    |(h/2)(fn + f_n+1) | y + that         ")
-        print("----|------------------+------------------+------------------+------------------+------------------+------------------")
+        print("n   |t                |y                |y'               |f(tn+h, y+hy')   |(h/2)(fn + f_n+1)| y + that      ")
+        print("----|-----------------+-----------------+-----------------+-----------------+-----------------+---------------")
     
         for i in 0..<cache.count {
-            print(String(format: "%04d|%018f|%018f|%018f|%018f|%018f|%018f", i, cache[i].t, cache[i].y, cache[i].yp, cache[i].nextyp, cache[i].avg, cache[i].yavg))
+            print(String(format: "%04d|%.15f|%.15f|%.15f|%.15f|%.15f|%.15f", i, Double(cache[i].t), Double(cache[i].y), Double(cache[i].yp), Double(cache[i].nextyp), Double(cache[i].avg), Double(cache[i].yavg)))
         }
     }
     

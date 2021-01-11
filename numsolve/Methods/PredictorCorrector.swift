@@ -1,13 +1,13 @@
 //
-//  AdamsBashforth.swift
+//  PredictorCorrector.swift
 //  numsolve
 //
-//  Created by Sylvan Martin on 11/13/20.
+//  Created by Sylvan Martin on 11/15/20.
 //
 
 import Foundation
 
-class AdamsBashforth: NumericalMethod {
+class PredictorCorrector: NumericalMethod {
     
     typealias TableRow = (t: Float80, y: Float80, f: Float80, nexty: Float80)
     
@@ -44,21 +44,42 @@ class AdamsBashforth: NumericalMethod {
     
         let startIndex = cache.count
         
-        cache += [TableRow](repeating: (t: .nan, y: 0, f: 0, nexty: 0), count: (n + 1) - cache.count)
+        cache += [TableRow](repeating: (t: .nan, y: 0, f: .nan, nexty: 0), count: (n + 1) - cache.count)
         
         for i in startIndex...n {
             cache[i].t = Float80(i) * stepSize
             cache[i].y = i == 0 ? y0 : cache[i - 1].nexty
-            cache[i].f = diffeq.yPrime(cache[i].t, cache[i].y)
             
-            let total = [
+            if cache[i].f.isNaN {
+                cache[i].f = diffeq.yPrime(cache[i].t, cache[i].y)
+            }
+            
+            
+            var total = [
                 55  * cache[i - 0].f,
                 -59 * cache[i - 1].f,
                 37  * cache[i - 2].f,
                 -9  * cache[i - 3].f
             ].reduce(0, +)
             
+            let yNextEstimate = cache[i].y + (stepSize / 24) * total
+            
+            let fNext = diffeq.yPrime(cache[i].t + stepSize, yNextEstimate)
+            
+            // go ahead and pass this forward to the next step to save computation
+            if i < n { cache[i + 1].f = fNext }
+            
+            // now do moulton but using fNext
+            
+            total = [
+                9  * fNext,
+                19 * cache[i].f,
+                -5 * cache[i - 1].f,
+                cache[i - 2].f
+            ].reduce(0, +)
+            
             cache[i].nexty = cache[i].y + (stepSize / 24) * total
+            
         }
         
         return cache[n].y

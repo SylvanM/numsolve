@@ -58,7 +58,7 @@ class RungeKutta: NumericalMethod {
         print("----|------------------+------------------+------------------+------------------+------------------+------------------+------------------")
     
         for i in 0..<cache.count {
-            print(String(format: "%04d|%018f|%018f|%018f|%018f|%018f|%018f|%018f", i, cache[i].t, cache[i].y, cache[i].kn1, cache[i].kn2, cache[i].kn3, cache[i].kn4, cache[i].yavg))
+            print(String(format: "%04d|%.15f|%.15f|%.15f|%.15f|%.15f|%.15f|%.15f", i, Double(cache[i].t), Double(cache[i].y), Double(cache[i].kn1), Double(cache[i].kn2), Double(cache[i].kn3), Double(cache[i].kn4), Double(cache[i].yavg)))
         }
     }
     

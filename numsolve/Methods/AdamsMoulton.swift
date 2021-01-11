@@ -1,13 +1,13 @@
 //
-//  AdamsBashforth.swift
+//  AdamsMoulton.swift
 //  numsolve
 //
-//  Created by Sylvan Martin on 11/13/20.
+//  Created by Sylvan Martin on 11/15/20.
 //
 
 import Foundation
 
-class AdamsBashforth: NumericalMethod {
+class AdamsMoutlon: NumericalMethod {
     
     typealias TableRow = (t: Float80, y: Float80, f: Float80, nexty: Float80)
     
@@ -30,7 +30,7 @@ class AdamsBashforth: NumericalMethod {
         
         // calculate the first 3 rows using Runge-Kutta
         let rk = RungeKutta(diffeq: diffeq, y0: y0, stepSize: stepSize)
-        rk.predict(n: 2)
+        rk.predict(n: 1)
         
         self.cache = rk.cache.map { (t: $0.t, y: $0.y, f: $0.kn1, nexty: $0.yavg) }
     }
@@ -51,14 +51,28 @@ class AdamsBashforth: NumericalMethod {
             cache[i].y = i == 0 ? y0 : cache[i - 1].nexty
             cache[i].f = diffeq.yPrime(cache[i].t, cache[i].y)
             
-            let total = [
-                55  * cache[i - 0].f,
-                -59 * cache[i - 1].f,
-                37  * cache[i - 2].f,
-                -9  * cache[i - 3].f
-            ].reduce(0, +)
+            let solver = NumericalSolver( Equation {
+                $0
+            } right: { [self] (nextY) -> Float80 in
+                let total = [
+                    9 * diffeq.yPrime(cache[i].t + stepSize, nextY),
+                    19 * cache[i].f,
+                    -5 * cache[i - 1].f,
+                    cache[i - 2].f
+                ].reduce(0, +)
+                return cache[i].y + (stepSize / 24) * total
+            })
+
+            do {
+                cache[i].nexty = try solver.solve(epsilon: 0.0000001, interval: (lower: -10, upper: 10))
+            } catch {
+                do {
+                    cache[i].nexty = try solver.solve(interval: (lower: -100, upper: 100))
+                } catch {
+                    fatalError("Wrong bounds for moulton")
+                }
+            }
             
-            cache[i].nexty = cache[i].y + (stepSize / 24) * total
         }
         
         return cache[n].y
